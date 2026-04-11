@@ -18,8 +18,8 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests((request) -> request
                 .requestMatchers("/myAccount", "/myBalance", "/myCards", "/myLoans").authenticated()
                 .requestMatchers("/notices", "/contact").permitAll());
-        httpSecurity.formLogin(Customizer.withDefaults());
-        httpSecurity.httpBasic(Customizer.withDefaults());
+        httpSecurity.formLogin(form -> form.disable()); // if only this then browser will pop-up a form for login
+        httpSecurity.httpBasic(Customizer.withDefaults()); // if disable this as well along with formLogin then we'll get 403
         return httpSecurity.build();
     }
 }
