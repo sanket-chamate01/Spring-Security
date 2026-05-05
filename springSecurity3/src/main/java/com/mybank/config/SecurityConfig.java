@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password4j.BcryptPassword4jPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -29,7 +32,15 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(){
         UserDetails user = User.withUsername("user").password("{noop}12345").authorities("read").build();
-        UserDetails admin = User.withUsername("admin").password("{noop}12345").authorities("admin").build();
+        UserDetails admin = User.withUsername("admin").password("{bcrypt}$2a$12$JHBqoNWtTdSRPAY/msTwI.OZzFcOk6SP0sP8ehih8I/ahd9BSgDk.").authorities("admin").build();
         return new InMemoryUserDetailsManager(user, admin);
+    }
+
+    // below method is available by default but we added it explicitly to customize it
+    @Bean
+    public PasswordEncoder PasswordEncoder(){
+//        return new BcryptPassword4jPasswordEncoder();
+        // we can directly use above method by PasswordEncoderFactories.createDelegatingPasswordEncoder() contains all the available encoders in it and if in future we want to change encoding type then we will have to change a lot of things.
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
