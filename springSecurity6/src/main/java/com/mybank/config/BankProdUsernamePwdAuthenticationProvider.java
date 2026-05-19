@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Profile("!prod")
-public class BankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
+@Profile("prod")
+public class BankProdUsernamePwdAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -26,7 +26,10 @@ public class BankUsernamePwdAuthenticationProvider implements AuthenticationProv
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(username, pwd, userDetails.getAuthorities());
+        if(passwordEncoder.matches(pwd, userDetails.getPassword())){
+            return new UsernamePasswordAuthenticationToken(username, pwd, userDetails.getAuthorities());
+        }
+        throw new BadCredentialsException("Invalid Password");
     }
 
     @Override
